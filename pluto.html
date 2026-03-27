@@ -2,113 +2,58 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Pluto XR - Pass Through</title>
-
+  <title>Pluto XR - Camera Fix</title>
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 </head>
 
 <body>
 
-<a-scene fog="type: exponential; color: #111; density: 0.01">
+<a-scene>
 
-  <!-- ===== ASSETS (HARUS PALING ATAS) ===== -->
+  <!-- ASSETS -->
   <a-assets>
-    <!-- 🔥 VIDEO WAJIB MUTED + PLAYSINLINE -->
     <video id="cam" autoplay playsinline muted></video>
   </a-assets>
 
-  <!-- ===== SKY ===== -->
-  <a-sky src="https://cdn.aframe.io/360-image-gallery-boilerplate/img/sechelt.jpg"></a-sky>
+  <!-- SKY -->
+  <a-sky color="#000"></a-sky>
 
-  <!-- ===== LIGHT ===== -->
-  <a-light type="ambient" intensity="1"></a-light>
-
-  <!-- ===== FRAME (BIAR KAYAK WINDOW) ===== -->
-  <a-plane 
-    position="0 1.6 -3.05"
-    width="1.8"
-    height="1.2"
-    color="#000"
-    opacity="0.4">
+  <!-- PANEL KAMERA -->
+  <a-plane id="camPanel"
+           position="0 1.6 -3"
+           width="1.6"
+           height="1"
+           material="src: #cam; shader: flat; side: double">
   </a-plane>
 
-  <!-- ===== PANEL KAMERA ===== -->
-  <a-plane 
-    id="camPanel"
-    class="card"
-    position="0 1.6 -3"
-    width="1.6"
-    height="1"
-    material="src: #cam; shader: flat; side: double">
-  </a-plane>
-
-  <!-- ===== PANEL TAMBAHAN ===== -->
-  <a-plane class="card"
-           position="-2 1.4 -3"
-           width="1"
-           height="0.6"
-           color="#222">
-  </a-plane>
-
-  <a-plane class="card"
-           position="2 1.4 -3"
-           width="1"
-           height="0.6"
-           color="#222">
-  </a-plane>
-
-  <!-- ===== CAMERA ===== -->
+  <!-- CAMERA -->
   <a-camera>
-    <a-cursor 
-      fuse="true" 
-      fuse-timeout="1200"
-      geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.02"
-      material="color: cyan; shader: flat">
-    </a-cursor>
+    <a-cursor fuse="true"></a-cursor>
   </a-camera>
 
 </a-scene>
 
-<!-- ===== SCRIPT ===== -->
 <script>
 window.addEventListener("load", async () => {
 
-  const video = document.querySelector("#cam");
+  const video = document.getElementById("cam");
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: "user" // kamera depan
-      },
+      video: true, // 🔥 jangan pakai facingMode dulu
       audio: false
     });
 
     video.srcObject = stream;
 
-    video.onloadedmetadata = () => {
-      video.play();
-      console.log("Kamera aktif ✅");
-    };
+    await video.play();
 
-  } catch (err) {
-    console.log("Error kamera:", err);
-    alert("Kamera gagal diakses 😅");
+    console.log("Kamera sukses nyala ✅");
+
+  } catch (e) {
+    console.error("ERROR:", e);
+    alert("Kamera gagal 😢: " + e.message);
   }
-
-  // ✨ HOVER EFFECT
-  const cards = document.querySelectorAll(".card");
-
-  cards.forEach(card => {
-
-    card.addEventListener("mouseenter", () => {
-      card.setAttribute("scale", "1.08 1.08 1");
-    });
-
-    card.addEventListener("mouseleave", () => {
-      card.setAttribute("scale", "1 1 1");
-    });
-
-  });
 
 });
 </script>
