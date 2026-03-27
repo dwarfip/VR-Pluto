@@ -1,23 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <title>Pluto XR - Pass Through</title>
+
   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 </head>
 
 <body>
 
+<!-- 🔥 VIDEO (DI LUAR SCENE) -->
 <video id="cam" autoplay playsinline muted style="display:none"></video>
 
 <a-scene>
-  
+
+  <!-- SKY -->
   <a-sky color="#000"></a-sky>
 
+  <!-- PANEL KAMERA -->
   <a-plane id="screen"
            position="0 1.6 -3"
            width="1.6"
            height="1">
   </a-plane>
 
+  <!-- CAMERA -->
   <a-camera>
     <a-cursor fuse="true"></a-cursor>
   </a-camera>
@@ -25,29 +32,46 @@
 </a-scene>
 
 <script>
-const video = document.getElementById("cam");
-const screen = document.getElementById("screen");
+window.addEventListener("load", async () => {
 
-navigator.mediaDevices.getUserMedia({ video: true })
-.then(stream => {
-  video.srcObject = stream;
+  const video = document.getElementById("cam");
+  const screen = document.getElementById("screen");
 
-  video.onloadeddata = () => {
-    video.play();
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+  video: {
+    facingMode: { exact: "environment" } // 🔥 kamera belakang
+  },
+  audio: false
+});
 
-    // 🔥 Cara paling stabil
-    const texture = new THREE.VideoTexture(video);
-    texture.minFilter = THREE.LinearFilter;
+    video.srcObject = stream;
 
-    screen.getObject3D('mesh').material = new THREE.MeshBasicMaterial({
-      map: texture
-    });
+    video.onloadeddata = () => {
+      video.play();
 
-    console.log("Texture OK");
-  };
-})
-.catch(err => {
-  alert("Error kamera: " + err);
+      // 🔥 PAKAI THREE (PALING STABIL)
+      const texture = new THREE.VideoTexture(video);
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.format = THREE.RGBFormat;
+
+      const mesh = screen.getObject3D('mesh');
+
+      if (mesh) {
+        mesh.material = new THREE.MeshBasicMaterial({
+          map: texture
+        });
+      }
+
+      console.log("PASS-THROUGH AKTIF 😳🔥");
+    };
+
+  } catch (err) {
+    console.error(err);
+    alert("Kamera gagal 😅");
+  }
+
 });
 </script>
 
