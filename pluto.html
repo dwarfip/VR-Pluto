@@ -39,6 +39,8 @@ window.addEventListener("load", async () => {
 
   const video = document.querySelector("#cam");
   const panel = document.querySelector("#camPanel");
+  
+  video.setAttribute("crossorigin", "anonymous");
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
