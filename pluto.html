@@ -24,7 +24,7 @@
   position="0 1.6 -3"
   width="1.6"
   height="1"
-  material="shader: flat; src: #cam; side: double; transparent: true">
+  material="shader: flat; side: double">
   </a-plane>
 
   <!-- CAMERA -->
@@ -48,14 +48,20 @@ window.addEventListener("load", async () => {
 
     video.srcObject = stream;
 
-    video.onloadedmetadata = () => {
-      video.play();
+    await video.play();
 
-      // 🔥 FORCE UPDATE TEXTURE
-      panel.setAttribute("material", "src", "#cam");
+    console.log("Video play ✅");
 
-      console.log("Video tampil ✅");
-    };
+    // 🔥 PENTING: delay biar video siap
+    setTimeout(() => {
+      panel.setAttribute("material", {
+        shader: "flat",
+        src: "#cam",
+        side: "double"
+      });
+
+      console.log("Texture dipasang ✅");
+    }, 500);
 
   } catch (err) {
     console.log("Error:", err);
