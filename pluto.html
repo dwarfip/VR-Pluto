@@ -19,11 +19,12 @@
   <a-sky color="#000"></a-sky>
 
   <!-- PANEL KAMERA -->
-  <a-plane id="camPanel"
-           position="0 1.6 -3"
-           width="1.6"
-           height="1"
-           material="src: #cam; shader: flat; side: double">
+  <a-plane 
+  id="camPanel"
+  position="0 1.6 -3"
+  width="1.6"
+  height="1"
+  material="shader: flat; src: #cam; side: double; transparent: true">
   </a-plane>
 
   <!-- CAMERA -->
@@ -36,23 +37,29 @@
 <script>
 window.addEventListener("load", async () => {
 
-  const video = document.getElementById("cam");
+  const video = document.querySelector("#cam");
+  const panel = document.querySelector("#camPanel");
 
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: true, // 🔥 jangan pakai facingMode dulu
+      video: true,
       audio: false
     });
 
     video.srcObject = stream;
 
-    await video.play();
+    video.onloadedmetadata = () => {
+      video.play();
 
-    console.log("Kamera sukses nyala ✅");
+      // 🔥 FORCE UPDATE TEXTURE
+      panel.setAttribute("material", "src", "#cam");
 
-  } catch (e) {
-    console.error("ERROR:", e);
-    alert("Kamera gagal 😢: " + e.message);
+      console.log("Video tampil ✅");
+    };
+
+  } catch (err) {
+    console.log("Error:", err);
+    alert("Kamera gagal 😅");
   }
 
 });
