@@ -96,8 +96,8 @@
   <!-- CAMERA -->
   <a-camera>
   <a-cursor 
-    fuse="true" 
-    fuse-timeout="1200"
+    fuse="false"
+    raycaster="objects: .card"
     geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.02"
     material="color: cyan; shader: flat">
   </a-cursor>
@@ -106,28 +106,49 @@
 </a-scene>
 
 <script>
-const cards = document.querySelectorAll(".card");
+let currentTarget = null;
 
-document.querySelector("#plutoPanel").addEventListener("click", () => {
-  window.location.href = "pluto.html";
-});
+const panels = document.querySelectorAll(".gamePanel");
 
-cards.forEach((card, index) => {
+panels.forEach(panel => {
 
-  card.addEventListener("mouseenter", () => {
-    card.setAttribute("scale", "1.1 1.1 1");
+  panel.addEventListener("mouseenter", () => {
+    currentTarget = panel;
+    panel.setAttribute("scale", "1.1 1.1 1");
   });
 
-  card.addEventListener("mouseleave", () => {
-    card.setAttribute("scale", "1 1 1");
-  });
-
-  card.addEventListener("click", () => {
-    alert("Klik panel ke-" + (index+1) + " 🎯");
+  panel.addEventListener("mouseleave", () => {
+    currentTarget = null;
+    panel.setAttribute("scale", "1 1 1");
   });
 
 });
+
+function checkGamepad() {
+  const gp = navigator.getGamepads()[0];
+
+  if (gp && currentTarget) {
+
+    // 🎮 Tombol X (biasanya index 0)
+    if (gp.buttons[0].pressed) {
+
+      console.log("Masuk panel:", currentTarget.id);
+
+      // 🚀 PINDAH HALAMAN
+      if (currentTarget.id === "game1") {
+        window.location.href = "game1.html";
+      }
+
+    }
+
+  }
+
+  requestAnimationFrame(checkGamepad);
+}
+
+checkGamepad();
 </script>
+
 
 
 </body>
